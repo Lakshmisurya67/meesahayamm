@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mee Sahayam AI Chatbot</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #eef4ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        width: 450px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+      .chat-box {
+        height: 420px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 12px;
+        background: #fafafa;
+      }
+      .msg {
+        margin: 10px 0;
+        padding: 10px;
+        background: #d9ebff;
+        border-radius: 10px;
+        width: fit-content;
+        max-width: 80%;
+      }
+      .user {
+        background: #c1ffd2;
+        margin-left: auto;
+      }
+      .input-area {
+        margin-top: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 30px;
+        border: 1px solid #ccc;
+      }
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 30px;
+        background: #5b9dff;
+        color: white;
+        cursor: pointer;
+      }
+      .mic-btn {
+        padding: 12px;
+        background: #ff5b5b;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Mee Sahayam AI Chatbot</h2>
+      <div class="chat-box" id="chatBox">
+        <div class="msg">
+          👋 Hello! Ask me anything about government schemes.
+        </div>
+      </div>
+      <div class="input-area">
+        <button class="mic-btn" onclick="startListening()">🎤</button>
+        <input type="text" id="userInput" placeholder="Type your question…" />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script>
+      let lastCategory = "";
+
+      // 🌟 TEXT TO SPEECH
+      function speak(text) {
+        let speech = new SpeechSynthesisUtterance(text);
+        speech.lang = "en-IN";
+        speech.pitch = 1;
+        speech.rate = 1;
+        window.speechSynthesis.speak(speech);
+      }
+
+      // 🎤 SPEECH TO TEXT
+      function startListening() {
+        let recog = new webkitSpeechRecognition();
+        recog.lang = "en-IN";
+        recog.onresult = function (event) {
+          let voiceText = event.results[0][0].transcript;
+          document.getElementById("userInput").value = voiceText;
+          sendMessage();
+        };
+        recog.start();
+      }
+
+      // 🌟 FULL DATABASE OF SCHEMES
+      const db = {
+        student: {
+          schemes: [
+            {
+              name: "Jagananna Vidya Deevena",
+              amount: "₹10,000",
+              apply: "Jnanabhumi portal",
+              date: "June – October",
+            },
+            {
+              name: "Vasathi Deevena",
+              amount: "₹15,000",
+              apply: "Hostel & food support office",
+              date: "June – October",
+            },
+            {
+              name: "Post-Matric Scholarship",
+              amount: "Varies by course",
+              apply: "NSP portal",
+              date: "July – September",
+            },
+            {
+              name: "National Scholarship Portal (NSP)",
+              amount: "Varies",
+              apply: "NSP portal",
+              date: "July – October",
+            },
+            {
+              name: "Mid-Day Meal Scheme",
+              amount: "Free meals",
+              apply: "School authorities",
+              date: "Year-round",
+            },
+          ],
+          alerts: [
+            "🎓 NSP verification window opens on 1 Aug.",
+            "⚠️ Last date for some scholarship verification: 30 Sep.",
+          ],
+        },
+        farmer: {
+          schemes: [
+            {
+              name: "PM Kisan",
+              amount: "₹6,000/year",
+              apply: "Rythu Bharosa center or online",
+              date: "Continuous renewal",
+            },
+            {
+              name: "Rythu Bharosa",
+              amount: "Varies",
+              apply: "District center",
+              date: "Starts 5 Dec",
+            },
+            {
+              name: "PM Fasal Bima Yojana",
+              amount: "Varies by crop",
+              apply: "Insurance portal",
+              date: "Before sowing season",
+            },
+            {
+              name: "Soil Health Card",
+              amount: "N/A",
+              apply: "Agriculture dept",
+              date: "Year-round",
+            },
+            {
+              name: "Krishi Sinchai Yojana",
+              amount: "Varies",
+              apply: "District irrigation office",
+              date: "May – August",
+            },
+          ],
+          alerts: [
+            "⚠️ Last date to apply for PM-Kisan 16th installment: 30 Nov.",
+            "🌾 Rythu Bharosa new enrollment starts 5 Dec at district centers.",
+          ],
+        },
+        women: {
+          schemes: [
+            {
+              name: "YSR Cheyutha",
+              amount: "₹75,000 over 4 years",
+              apply: "Ward/village secretariat",
+              date: "Year-round",
+            },
+            {
+              name: "Mahila Samakhya",
+              amount: "Varies",
+              apply: "District social welfare office",
+              date: "Ongoing",
+            },
+            {
+              name: "Stand-Up India Loans",
+              amount: "Up to ₹10 lakh",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+            {
+              name: "Women SHG Loans",
+              amount: "₹50,000 – ₹3,00,000",
+              apply: "SHG Bank",
+              date: "Year-round",
+            },
+            {
+              name: "One Stop Centre Scheme",
+              amount: "Free services",
+              apply: "District Women & Child Welfare",
+              date: "Year-round",
+            },
+          ],
+          alerts: ["📢 Women SHG bank linkage drives next week."],
+        },
+        "senior citizen": {
+          schemes: [
+            {
+              name: "Old Age Pension",
+              amount: "₹2,000/month",
+              apply: "MeeSeva/Navasakam",
+              date: "Monthly cycle",
+            },
+            {
+              name: "Senior Citizen Health Insurance",
+              amount: "Coverage varies",
+              apply: "Health department portal",
+              date: "Year-round",
+            },
+            {
+              name: "Free Bus Pass",
+              amount: "N/A",
+              apply: "Transport office",
+              date: "Year-round",
+            },
+            {
+              name: "Indira Gandhi National Old Age Pension",
+              amount: "₹3,000/month",
+              apply: "MeeSeva",
+              date: "Monthly cycle",
+            },
+          ],
+          alerts: ["🕘 Pension disbursement for this month scheduled on 1st."],
+        },
+        "job seeker": {
+          schemes: [
+            {
+              name: "YSR Unemployment Allowance",
+              amount: "₹2,000/month",
+              apply: "Skill Development portal",
+              date: "Monthly batches",
+            },
+            {
+              name: "Skill Development Training",
+              amount: "Free / stipend",
+              apply: "Skill India portal",
+              date: "Monthly batches",
+            },
+            {
+              name: "PM Kaushal Vikas Yojana",
+              amount: "₹1,000 – ₹3,000",
+              apply: "Skill India portal",
+              date: "Ongoing",
+            },
+            {
+              name: "National Career Service",
+              amount: "Free",
+              apply: "NCS portal",
+              date: "Ongoing",
+            },
+          ],
+          alerts: ["📢 New skill training batch opening next month."],
+        },
+        entrepreneur: {
+          schemes: [
+            {
+              name: "PMEGP loan",
+              amount: "Up to ₹25 lakh",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+            {
+              name: "Mudra Loan",
+              amount: "₹10,000 – ₹10 lakh",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+            {
+              name: "Stand-Up India",
+              amount: "Up to ₹1 crore",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+            {
+              name: "Startup India Seed Fund",
+              amount: "Up to ₹50 lakh",
+              apply: "Startup India portal",
+              date: "Rolling basis",
+            },
+            {
+              name: "Credit Guarantee Scheme",
+              amount: "Varies",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+          ],
+          alerts: ["🚀 Startup seed fund applications: rolling basis."],
+        },
+        healthcare: {
+          schemes: [
+            {
+              name: "Aarogyasri",
+              amount: "Coverage up to ₹5 lakh",
+              apply: "Health dept portal",
+              date: "Year-round",
+            },
+            {
+              name: "Free Medicine Scheme",
+              amount: "Free",
+              apply: "PHC/CHC",
+              date: "Year-round",
+            },
+            {
+              name: "Ayushman Bharat",
+              amount: "Coverage up to ₹5 lakh",
+              apply: "Health dept portal",
+              date: "Year-round",
+            },
+            {
+              name: "National Health Mission",
+              amount: "Varies",
+              apply: "District Health Office",
+              date: "Year-round",
+            },
+          ],
+          alerts: ["🏥 Free medical camp in your district on 12 Dec."],
+        },
+        housing: {
+          schemes: [
+            {
+              name: "PM Awas Yojana",
+              amount: "Up to ₹2.5 lakh",
+              apply: "Housing portal",
+              date: "Annually",
+            },
+            {
+              name: "YSR Housing",
+              amount: "Varies",
+              apply: "Local secretariat",
+              date: "Ongoing",
+            },
+            {
+              name: "Urban Housing Subsidy",
+              amount: "₹1 – 2 lakh",
+              apply: "Urban housing office",
+              date: "Year-round",
+            },
+            {
+              name: "Pradhan Mantri Awas (Urban)",
+              amount: "₹2 – 2.5 lakh",
+              apply: "Housing portal",
+              date: "Annually",
+            },
+          ],
+          alerts: ["🏠 New housing allotment list to be released next month."],
+        },
+        "loan finance": {
+          schemes: [
+            {
+              name: "Mudra Loan",
+              amount: "₹10,000 – ₹10 lakh",
+              apply: "Bank portal",
+              date: "Monthly approvals",
+            },
+            {
+              name: "PM Jan Dhan",
+              amount: "₹1,000 – ₹5,000",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+            {
+              name: "MSME Support",
+              amount: "Up to ₹50 lakh",
+              apply: "Bank/online",
+              date: "Ongoing",
+            },
+            {
+              name: "Credit Linked Subsidy",
+              amount: "Varies",
+              apply: "Bank portal",
+              date: "Ongoing",
+            },
+          ],
+          alerts: ["🏦 Special MSME refinance window open this quarter."],
+        },
+        shg: {
+          schemes: [
+            {
+              name: "SHG Bank Linkage",
+              amount: "₹10,000 – ₹3,00,000",
+              apply: "SERP/DRDA",
+              date: "Periodic disbursal",
+            },
+            {
+              name: "Interest Free Loans",
+              amount: "Varies",
+              apply: "SERP/DRDA",
+              date: "Ongoing",
+            },
+            {
+              name: "Livelihood Support",
+              amount: "Varies",
+              apply: "SERP/DRDA",
+              date: "Ongoing",
+            },
+          ],
+          alerts: ["👥 SHG bank linkage meeting next week."],
+        },
+        minority: {
+          schemes: [
+            {
+              name: "Minority Scholarship",
+              amount: "₹5,000 – ₹25,000",
+              apply: "Minority Welfare portal",
+              date: "July – Dec",
+            },
+            {
+              name: "Skill Training",
+              amount: "Free / stipend",
+              apply: "Minority Welfare portal",
+              date: "Ongoing",
+            },
+            {
+              name: "Housing Support",
+              amount: "₹50,000 – ₹2 lakh",
+              apply: "Minority Welfare portal",
+              date: "Ongoing",
+            },
+          ],
+          alerts: ["🕌 Minority scholarship application opens 1 July."],
+        },
+        youth: {
+          schemes: [
+            {
+              name: "Skill India Training",
+              amount: "Free / stipend",
+              apply: "Skill India portal",
+              date: "Monthly batches",
+            },
+            {
+              name: "Youth Empowerment Program",
+              amount: "Varies",
+              apply: "Youth portal",
+              date: "Ongoing",
+            },
+            {
+              name: "YSR Job Mela",
+              amount: "Free registration",
+              apply: "District employment office",
+              date: "20th of every month",
+            },
+          ],
+          alerts: ["🎯 Youth job mela scheduled on 20th this month."],
+        },
+        disability: {
+          schemes: [
+            {
+              name: "Disability Pension",
+              amount: "₹3,000/month",
+              apply: "MeeSeva/Navasakam",
+              date: "Monthly approvals",
+            },
+            {
+              name: "Assistive Devices Scheme",
+              amount: "Free",
+              apply: "District disability office",
+              date: "10th Dec",
+            },
+            {
+              name: "Free Health Support",
+              amount: "Varies",
+              apply: "Health dept",
+              date: "Ongoing",
+            },
+          ],
+          alerts: ["♿ New assistive devices distribution on 10th Dec."],
+        },
+        "ration welfare": {
+          schemes: [
+            {
+              name: "Ration Card Subsidy",
+              amount: "₹1 – 5 per kg",
+              apply: "MeeSeva/Ration Office",
+              date: "Monthly",
+            },
+            {
+              name: "Free Rice",
+              amount: "Varies",
+              apply: "MeeSeva/Ration Office",
+              date: "Monthly",
+            },
+            {
+              name: "Annapurna Scheme",
+              amount: "Free rice for eligible senior citizens",
+              apply: "District food office",
+              date: "Monthly",
+            },
+          ],
+          alerts: ["🍚 Ration distribution day announced for district X."],
+        },
+      };
+
+      // 🌟 CATEGORY DETECTION
+      function detectCategory(input) {
+        input = input.toLowerCase();
+        const map = {
+          student: ["student", "scholarship", "education", "study"],
+          farmer: ["farmer", "agriculture", "pmkisan"],
+          women: ["woman", "mahila"],
+          "senior citizen": ["senior", "old", "pension"],
+          "job seeker": ["job", "unemployment", "placement"],
+          entrepreneur: ["entrepreneur", "startup", "business"],
+          healthcare: ["health", "hospital", "ayushman"],
+          housing: ["house", "housing", "awas"],
+          "loan finance": ["loan", "finance", "mudra", "msme"],
+          shg: ["shg", "self-help"],
+          minority: ["minority"],
+          youth: ["youth", "young"],
+          disability: ["disability", "disabled"],
+          "ration welfare": ["ration", "anapurna"],
+        };
+        for (let cat in map) {
+          for (let keyword of map[cat]) {
+            if (input.includes(keyword)) return cat;
+          }
+        }
+        return null;
+      }
+
+      // 🌟 AI RESPONSE
+      function getAIResponse(input) {
+        input = input.toLowerCase();
+        let category = detectCategory(input);
+        if (category) {
+          lastCategory = category;
+          let response = `Here are schemes for ${category}:<br>`;
+          db[category].schemes.forEach((s) => {
+            response += `• <b>${s.name}</b> — Amount: ${s.amount}, Apply: ${s.apply}, Date: ${s.date}<br>`;
+          });
+          speak(response);
+          return response;
+        }
+        if (input.includes("amount")) {
+          if (!lastCategory) return "Please specify a category first.";
+          let response = db[lastCategory].schemes
+            .map((s) => `${s.name}: ${s.amount}`)
+            .join("<br>");
+          speak(response);
+          return response;
+        }
+        if (input.includes("apply")) {
+          if (!lastCategory) return "Please specify a category first.";
+          let response = db[lastCategory].schemes
+            .map((s) => `${s.name}: ${s.apply}`)
+            .join("<br>");
+          speak(response);
+          return response;
+        }
+        if (input.includes("date")) {
+          if (!lastCategory) return "Please specify a category first.";
+          let response = db[lastCategory].schemes
+            .map((s) => `${s.name}: ${s.date}`)
+            .join("<br>");
+          speak(response);
+          return response;
+        }
+        speak("Please ask about any scheme category.");
+        return "Ask about Students, Farmers, Women, Youth, Housing, Loans, SHG, etc.";
+      }
+
+      // 🌟 SEND MESSAGE
+      function sendMessage() {
+        let box = document.getElementById("chatBox");
+        let input = document.getElementById("userInput");
+        let text = input.value.trim();
+        if (text === "") return;
+
+        box.innerHTML += `<div class='msg user'>${text}</div>`;
+        let reply = getAIResponse(text);
+        box.innerHTML += `<div class='msg'>${reply}</div>`;
+        box.scrollTop = box.scrollHeight;
+
+        input.value = "";
+      }
+
+      document
+        .getElementById("userInput")
+        .addEventListener("keyup", function (event) {
+          if (event.key === "Enter") sendMessage();
+        });
+    </script>
+  </body>
+</html>

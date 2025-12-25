@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta-name ="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Category - Mee Sahayam</title>
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f7faff;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 850px;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        text-align: center;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        color: #222;
+        font-weight: 600;
+      }
+
+      p {
+        color: #666;
+        margin-bottom: 25px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        background: #e7f1fb;
+        padding: 18px;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: 0.25s;
+        text-decoration: none;
+        color: #222;
+        text-align: center;
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .card:hover {
+        background: #d3e5f7;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Select Your Category</h2>
+      <p>Choose the category that best matches your profile</p>
+
+      <div class="grid">
+        <a href="chatbot.html" class="card">Students</a>
+        <a href="chatbot.html" class="card">Farmers</a>
+        <a href="chatbot.html" class="card">Women</a>
+        <a href="chatbot.html" class="card">Senior Citizens</a>
+        <a href="chatbot.html" class="card">Job Seekers</a>
+        <a href="chatbot.html" class="card">Entrepreneurs</a>
+        <a href="chatbot.html" class="card">Healthcare</a>
+        <a href="chatbot.html" class="card">Housing</a>
+        <a href="chatbot.html" class="card">Loans & Finance</a>
+        <a href="chatbot.html" class="card">Self-Help Groups</a>
+        <a href="chatbot.html" class="card">Minorities</a>
+        <a href="chatbot.html" class="card">Youth</a>
+        <a href="chatbot.html" class="card">Disability Support</a>
+        <a href="chatbot.html" class="card">Ration & Welfare</a>
+      </div>
+    </div>
+  </body>
+</html>
